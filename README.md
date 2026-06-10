@@ -216,12 +216,19 @@ The phase timeline panel displays two colour-coded bars spanning the full video 
 
 <div align="center">
 
-![Phase Timeline](fig/phase_timeline.png)
+![Phase Timeline](fig/phase_timeline_v.png)
 
 *Figure 6: Phase Timeline — TSM Raw vs CRF Smoothed*
 
 </div>
 
+<div align="center">
+
+![Phase Timeline](fig/tool_detection.png)
+
+*Figure 7: Tool Detection Probability Heatmap Over Time*
+
+</div>
 
 ---
 
