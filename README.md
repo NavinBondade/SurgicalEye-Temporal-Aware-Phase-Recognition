@@ -1,6 +1,5 @@
 # SurgicalEye: Temporal-Aware Phase Recognition and Explainability for Laparoscopic Video
 
-
 Built a surgical workflow monitoring system that simultaneously recognises and detects 7 surgical phases and instruments from laparoscopic video using a ResNet50-TSM backbone with Viterbi CRF smoothing, achieving 77.8% accuracy and 91% edit distance reduction on Cholec80, enabling automated surgical documentation, operating room workflow monitoring, and real-time phase duration alerting.
 
 ---
@@ -14,6 +13,10 @@ This project addresses that gap by developing an end-to-end deep learning pipeli
 ---
 
 ## Dataset and Preprocessing
+
+The Cholec80 dataset comprises 80 laparoscopic cholecystectomy videos recorded at 25 frames per second, annotated with frame-level surgical phase labels across 7 phases and binary instrument presence labels for 7 instrument classes. The dataset follows a standard split of videos 1 to 40 for training, 41 to 48 for validation, and 49 to 80 for testing, yielding 86,344 training frames, 21,445 validation frames, and 76,789 test frames.
+
+Preprocessing involved extracting frames at 1 frame per second, reducing the dataset to a computationally tractable scale whilst preserving sufficient temporal resolution for phase recognition. Extracted frames were resized to 224x224 pixels and normalised using ImageNet mean and standard deviation statistics. Training frames were augmented with random horizontal flipping and colour jitter to improve generalisation. To address the substantial class imbalance inherent in surgical video, where dominant phases such as CalotTriangleDissection occupy significantly more frames than rare phases such as GallbladderRetraction, inverse-frequency class weights were applied to the phase classification loss. For temporal modeling, frames were organised into overlapping sequences of 8 consecutive frames per sample, providing the TSM with sufficient inter-frame context to capture phase transition dynamics.
 
 <div align="center">
 
@@ -33,23 +36,19 @@ This project addresses that gap by developing an end-to-end deep learning pipeli
 
 <div align="center">
 
-| # | Instrument |
-|---|---|
-| 1 | Grasper |
-| 2 | Bipolar |
-| 3 | Hook |
-| 4 | Scissors |
-| 5 | Clipper |
-| 6 | Irrigator |
-| 7 | SpecimenBag |
+| # | Instrument | Surgical Role |
+|---|---|---|
+| 1 | Grasper | Holds and manipulates tissue and organs during dissection |
+| 2 | Bipolar | Applies electrical current to coagulate bleeding vessels |
+| 3 | Hook | Primary dissection tool for cutting and cauterising tissue |
+| 4 | Scissors | Cuts tissue and structures with mechanical precision |
+| 5 | Clipper | Applies surgical clips to seal cystic duct and artery |
+| 6 | Irrigator | Flushes the operative field to remove blood and debris |
+| 7 | SpecimenBag | Encloses the resected gallbladder for safe extraction |
 
-*Table 2: Surgical Instruments*
+*Table 2: Surgical Instruments and Their Roles*
 
 </div>
-
-The Cholec80 dataset comprises 80 laparoscopic cholecystectomy videos recorded at 25 frames per second, annotated with frame-level surgical phase labels across 7 phases and binary instrument presence labels for 7 instrument classes. The dataset follows a standard split of videos 1 to 40 for training, 41 to 48 for validation, and 49 to 80 for testing, yielding 86,344 training frames, 21,445 validation frames, and 76,789 test frames.
-
-Preprocessing involved extracting frames at 1 frame per second, reducing the dataset to a computationally tractable scale whilst preserving sufficient temporal resolution for phase recognition. Extracted frames were resized to 224x224 pixels and normalised using ImageNet mean and standard deviation statistics. Training frames were augmented with random horizontal flipping and colour jitter to improve generalisation. To address the substantial class imbalance inherent in surgical video, where dominant phases such as CalotTriangleDissection occupy significantly more frames than rare phases such as GallbladderRetraction, inverse-frequency class weights were applied to the phase classification loss. For temporal modeling, frames were organised into overlapping sequences of 8 consecutive frames per sample, providing the TSM with sufficient inter-frame context to capture phase transition dynamics.
 
 <div align="center">
 
@@ -183,24 +182,6 @@ Overall, the per-phase breakdown reveals that class imbalance and visual similar
 
 ---
 
-## Demo
-
-The SurgicalEye pipeline is packaged as an interactive Gradio web application accessible at `http://localhost:7860`. The demo file is located at `demo.py`.
-
-Upon uploading a laparoscopic video, the interface presents four complementary outputs that together communicate the full analytical capability of the pipeline. The GradCAM overlay video renders the original surgical footage with a real-time attention heatmap blended at 45% opacity, displaying the predicted surgical phase in its corresponding colour, a confidence bar reflecting prediction certainty, and the set of instruments detected at each frame, providing a frame-by-frame interpretable account of surgical workflow as understood by the model.
-
-The phase timeline panel displays two colour-coded bars spanning the full video duration: the upper bar shows raw TSM predictions and the lower bar shows CRF smoothed predictions, making the temporal coherence improvement immediately visible and intuitive. The tool detection heatmap displays instrument presence probability across time as a colour-coded matrix, revealing patterns of instrument use across the surgical procedure. Finally, the analysis summary identifies the dominant surgical phase, all phases detected, and total frames processed, providing a concise clinical overview of the procedure.
-
-<div align="center">
-
-![Phase Timeline](fig/phase_timeline.png)
-
-*Figure 4: Phase Timeline — TSM Raw vs CRF Smoothed*
-
-</div>
-
----
-
 ## GradCAM Explainability
 
 A key requirement for clinical adoption of surgical AI systems is interpretability. Clinicians must be able to understand and verify why a model makes a particular prediction before trusting it in practice. This project addresses that requirement through GradCAM (Gradient-weighted Class Activation Mapping), which computes the gradient of the predicted class score with respect to the final convolutional feature maps and produces spatially localised heatmaps highlighting the anatomical regions that drove each prediction.
@@ -213,9 +194,34 @@ Beyond static images, GradCAM was applied frame by frame to generate a full vide
 
 ![GradCAM Mosaic](fig/all_phases_mosaic.png)
 
-*Figure 5: GradCAM — Best Frame per Surgical Phase*
+*Figure 4: GradCAM — Best Frame per Surgical Phase*
 
 </div>
+
+## Demo
+
+The SurgicalEye pipeline is packaged as an interactive Gradio web application. 
+
+Upon uploading a laparoscopic video, the interface presents four complementary outputs that together communicate the full analytical capability of the pipeline. The GradCAM overlay video renders the original surgical footage with a real-time attention heatmap blended at 45% opacity, displaying the predicted surgical phase in its corresponding colour, a confidence bar reflecting prediction certainty, and the set of instruments detected at each frame, providing a frame-by-frame interpretable account of surgical workflow as understood by the model.
+
+The phase timeline panel displays two colour-coded bars spanning the full video duration: the upper bar shows raw TSM predictions and the lower bar shows CRF smoothed predictions, making the temporal coherence improvement immediately visible and intuitive. The tool detection heatmap displays instrument presence probability across time as a colour-coded matrix, revealing patterns of instrument use across the surgical procedure. Finally, the analysis summary identifies the dominant surgical phase, all phases detected, and total frames processed, providing a concise clinical overview of the procedure.
+
+<div align="center">
+
+![Demo Video](demo/demo.mp4)
+
+*Figure 5: SurgicalEye Gradio Demo — GradCAM Overlay, Phase Timeline and Tool Detection*
+
+</div>
+
+<div align="center">
+
+![Phase Timeline](fig/phase_timeline.png)
+
+*Figure 6: Phase Timeline — TSM Raw vs CRF Smoothed*
+
+</div>
+
 
 ---
 
