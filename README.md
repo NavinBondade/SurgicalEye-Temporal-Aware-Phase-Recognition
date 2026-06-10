@@ -208,7 +208,7 @@ The phase timeline panel displays two colour-coded bars spanning the full video 
 
 <div align="center">
 
-![Demo Video](demo/demo.mp4)
+![Demo Video](fig/demo.mp4)
 
 *Figure 5: SurgicalEye Gradio Demo — GradCAM Overlay, Phase Timeline and Tool Detection*
 
