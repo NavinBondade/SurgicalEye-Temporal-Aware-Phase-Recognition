@@ -1,27 +1,7 @@
 # SurgicalEye: Temporal-Aware Phase Recognition and Explainability for Laparoscopic Video
 
-<div align="center">
-
-![Python](https://img.shields.io/badge/Python-3.10-blue) ![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange) ![Gradio](https://img.shields.io/badge/Demo-Gradio-green) ![License](https://img.shields.io/badge/License-MIT-lightgrey)
-
-</div>
 
 Built a surgical workflow monitoring system that simultaneously recognises and detects 7 surgical phases and instruments from laparoscopic video using a ResNet50-TSM backbone with Viterbi CRF smoothing, achieving 77.8% accuracy and 91% edit distance reduction on Cholec80, enabling automated surgical documentation, operating room workflow monitoring, and real-time phase duration alerting.
-
----
-
-## Table of Contents
-
-- [Background and Motivation](#background-and-motivation)
-- [Dataset and Preprocessing](#dataset-and-preprocessing)
-- [Pipeline Architecture](#pipeline-architecture)
-- [Results](#results)
-- [Demo](#demo)
-- [GradCAM Explainability](#gradcam-explainability)
-- [Key Findings](#key-findings)
-- [Limitations and Future Work](#limitations-and-future-work)
-- [References](#references)
-- [Author](#author)
 
 ---
 
